@@ -69,6 +69,7 @@ router.post("/signup", fileUpload(), async (req, res) => {
       username: newUser.username,
       avatar: newUser.avatar,
       email: email,
+      Fav: newUser.Fav,
     });
   } catch (error) {
     console.log(error.message);
@@ -89,9 +90,9 @@ router.post("/login", async (req, res) => {
     const userDetails = await User.findOne({ email: email });
 
     if (!userDetails) {
-      return res.status(404).json({ error: "Email address unknown" });
+      return res.status(404).json({ message: "Email address unknown" });
     }
-    const { salt, token, hash, _id, username, avatar } = userDetails;
+    const { salt, token, hash, _id, username, avatar, Fav } = userDetails;
 
     const hashTest = SHA256(password + salt).toString(encBase64);
 
@@ -105,6 +106,7 @@ router.post("/login", async (req, res) => {
       username: username,
       avatar: avatar,
       email: email,
+      Fav: Fav,
     });
   } catch (error) {
     console.log(error.message);
@@ -177,7 +179,6 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
         overview,
         poster,
       },
-      list,
       comment,
       asset,
     } = req.body;
@@ -198,35 +199,37 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
       await newMovie.save();
       id = newMovie._id;
     }
-    const user = await User.findById(req.body.user);
+    const user = await User.findById(req.body.user).select("-hash -salt");
 
     user[list].push({ movie: id, comment: comment, asset: asset });
 
-    if (list === "Seen") {
-      const tab = [];
-      for (let i = 0; i < user.toSee; i++) {
-        if (user.toSee[i].movie !== id) {
-          tab.push(user.toSee[i]);
-        }
-      }
-      user.toSee = tab;
-    }
-
     await user.save();
+    res.status(200).json(user);
   } catch (error) {
     console.log(error);
+    res.status(500).json(error);
   }
 });
 
-router.get("/getUserList", isAuthenticated, async (req, res) => {
+router.get("/fav", isAuthenticated, async (req, res) => {
   try {
-    const { list } = req.body; //    toSee, Seen, Fav
-
-    const user = await User.findById(req.body.user).populate(list);
+    const user = await User.findById(req.body.user).populate("fav");
     res.status(201).json(user);
   } catch (error) {
     console.log(error);
+    res.status(500).json(error);
   }
 });
 
+router.get("/details", isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.body.user).select(
+      "-hash -salt -token"
+    );
+    res.status(201).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
 module.exports = router;
