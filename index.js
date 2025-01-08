@@ -11,8 +11,8 @@ mongoose.connect(process.env.MONGODB_URI);
 
 app.use(express.json());
 
-// const userRoutes = require("./routes/user");
-// app.use("/user", userRoutes);
+const userRoutes = require("./routes/user");
+app.use("/user", userRoutes);
 
 const moviesRoutes = require("./routes/movies");
 app.use(moviesRoutes);

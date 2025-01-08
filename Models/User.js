@@ -15,8 +15,6 @@ const User =
     token: { type: String },
     hash: { type: String },
     salt: { type: String },
-    toSee: [MovieUser],
-    Seen: [MovieUser],
     Fav: [MovieUser],
   });
 
