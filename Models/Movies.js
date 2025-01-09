@@ -1,15 +1,16 @@
 const mongoose = require("mongoose");
 
 const Movie = mongoose.model("Movie", {
-  title_fr: String,
+  title: String,
   original_title: String,
   release_date: String,
-  Genre: String,
+  genre: Array,
   runtime: String,
   overview: String,
   budget: String,
   revenue: String,
-  production_companies: String,
-  Poster: String,
+  production_companies: Array,
+  poster: String,
+  tagline: String,
 });
 module.exports = Movie;
