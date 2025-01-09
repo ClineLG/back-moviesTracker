@@ -172,12 +172,17 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
   try {
     const {
       movie: {
-        title_fr,
+        title,
         original_title,
         release_date,
         genre,
         overview,
         poster,
+        runtime,
+        tagline,
+        revenue,
+        budget,
+        production_companies,
       },
       comment,
       asset,
@@ -189,19 +194,24 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
       id = movieInDb._id;
     } else {
       const newMovie = new Movie({
-        title_fr: title_fr,
+        title: title,
         original_title: original_title,
         release_date: release_date,
-        Genre: genre,
+        genre: genre,
         overview: overview,
-        Poster: poster,
+        poster: poster,
+        runtime: runtime,
+        tagline: tagline,
+        revenue: revenue,
+        budget: budget,
+        production_companies: production_companies,
       });
       await newMovie.save();
       id = newMovie._id;
     }
     const user = await User.findById(req.body.user).select("-hash -salt");
 
-    user[list].push({ movie: id, comment: comment, asset: asset });
+    user.fav.push({ movie: id, comment: comment, asset: asset });
 
     await user.save();
     res.status(200).json(user);
@@ -213,8 +223,32 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
 
 router.get("/fav", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findById(req.body.user).populate("fav");
+    const user = await User.findById(req.body.user)
+      .populate([{ path: "fav", populate: "movie", strictPopulate: false }])
+      .select("fav");
     res.status(201).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/favAsset", isAuthenticated, async (req, res) => {
+  try {
+    const user = await User.findById(req.body.user)
+      .populate("fav")
+      .select("fav");
+    const tab = [];
+    if (user.fav.length < 1) {
+      res.status(201).json(["A regarder plus tard"]);
+    } else {
+      for (let i = 0; i < user.fav.length; i++) {
+        tab.push(user.fav[i].asset);
+      }
+      tabToSend = [...new Set(tab)];
+      res.status(201).json(tabToSend);
+      console.log(tabToSend);
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -223,9 +257,7 @@ router.get("/fav", isAuthenticated, async (req, res) => {
 
 router.get("/details", isAuthenticated, async (req, res) => {
   try {
-    const user = await User.findById(req.body.user).select(
-      "-hash -salt -token"
-    );
+    const user = await User.findById(req.body.user).select("-hash -salt");
     res.status(201).json(user);
   } catch (error) {
     console.log(error);
