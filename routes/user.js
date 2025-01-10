@@ -6,6 +6,8 @@ const User = require("../Models/User");
 
 const Movies = require("../Models/Movies");
 
+const MovieUser = require("../Models/User");
+
 const uid2 = require("uid2");
 
 const SHA256 = require("crypto-js/sha256");
@@ -175,7 +177,7 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
         title,
         original_title,
         release_date,
-        genre,
+        genres,
         overview,
         poster,
         runtime,
@@ -197,7 +199,7 @@ router.put("/addMovie", isAuthenticated, async (req, res) => {
         title: title,
         original_title: original_title,
         release_date: release_date,
-        genre: genre,
+        genres: genres,
         overview: overview,
         poster: poster,
         runtime: runtime,
@@ -226,7 +228,34 @@ router.get("/fav", isAuthenticated, async (req, res) => {
     const user = await User.findById(req.body.user)
       .populate([{ path: "fav", populate: "movie", strictPopulate: false }])
       .select("fav");
-    res.status(201).json(user);
+
+    const tab = [];
+    if (user.fav.length < 1) {
+      res.status(201).json({ message: "pas de collections commencée" });
+    } else {
+      for (let i = 0; i < user.fav.length; i++) {
+        tab.push(user.fav[i].asset);
+      }
+      tabAsset = [...new Set(tab)];
+      const objSort = { results: [], count: tabAsset.length };
+
+      for (let i = 0; i < tabAsset.length; i++) {
+        const tabSort = [];
+        const objasset = { name: tabAsset[i], movies: [] };
+        for (let j = 0; j < user.fav.length; j++) {
+          if (user.fav[j].asset === tabAsset[i]) {
+            tabSort.push(user.fav[j]);
+          }
+        }
+        objasset.movies.push(tabSort);
+        objSort.results.push(objasset);
+      }
+
+      //là : {a:[{},{},...],b:[{},{},...],c:[{},{},...]}
+      //ideal : {length:3,result:[{name:a[{},{}...]},{b:[{},{}...]},c:{[{},{}...]}]}
+
+      res.status(201).json(objSort);
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
@@ -249,6 +278,114 @@ router.get("/favAsset", isAuthenticated, async (req, res) => {
       res.status(201).json(tabToSend);
       console.log(tabToSend);
     }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.get("/collection/details/:id", isAuthenticated, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      res.status(500).json({ message: "ID needeed" });
+    }
+
+    // console.log(id);
+    const user = await User.findById(req.body.user)
+      .populate([{ path: "fav", populate: "movie", strictPopulate: false }])
+      .select("fav");
+    const objToSend = {};
+    for (let i = 0; i < user.fav.length; i++) {
+      console.log("UserId", user.fav[i]._id.toString());
+      console.log("id", id);
+
+      if (user.fav[i]._id.toString() === id) {
+        objToSend.result = user.fav[i];
+        objToSend.index = i;
+      }
+    }
+    // console.log("fav", favToSend);
+    if (!objToSend.result) {
+      res.status(401).json({ message: "no result found" });
+    } else {
+      res.status(201).json(objToSend);
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.put("/collection/details/:index", isAuthenticated, async (req, res) => {
+  try {
+    const { index } = req.params;
+    if (!index) {
+      res.status(500).json({ message: "ID needeed" });
+    }
+    const { asset, comment } = req.body;
+    const user = await User.findById(req.body.user)
+      .populate([{ path: "fav", populate: "movie", strictPopulate: false }])
+      .select("fav");
+    // console.log("User", user);
+    if (asset) {
+      user.fav[index].asset = asset;
+    }
+    if (comment) {
+      user.fav[index].comment = comment;
+    }
+    await user.save();
+    res.status(201).json(user.fav[index]);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+});
+
+router.delete(
+  "/collection/details/:index",
+  isAuthenticated,
+  async (req, res) => {
+    try {
+      const { index } = req.params;
+      if (!index) {
+        res.status(500).json({ message: "ID needeed" });
+      }
+      const user = await User.findById(req.body.user)
+        .populate([{ path: "fav", populate: "movie", strictPopulate: false }])
+        .select("fav");
+
+      user.fav.splice(index, 1);
+
+      await user.save();
+      res.status(201).json(user.fav);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json(error);
+    }
+  }
+);
+
+router.delete("/collection/:name", isAuthenticated, async (req, res) => {
+  try {
+    const { name } = req.params;
+    if (!name) {
+      res.status(500).json({ message: "ID needeed" });
+    }
+    const user = await User.findById(req.body.user)
+      .populate([{ path: "fav", populate: "movie", strictPopulate: false }])
+      .select("fav");
+
+    const tab = [];
+
+    for (let i = 0; i < user.fav.length; i++) {
+      if (user.fav[i].asset !== name) {
+        tab.push(user.fav[i]);
+      }
+    }
+    user.fav = tab;
+    await user.save();
+    res.status(201).json(user.fav);
   } catch (error) {
     console.log(error);
     res.status(500).json(error);
