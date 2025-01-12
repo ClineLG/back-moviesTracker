@@ -160,7 +160,7 @@ router.put("/update", isAuthenticated, fileUpload(), async (req, res) => {
   }
 });
 
-router.delete("/deleteUser", isAuthenticated, async (req, res) => {
+router.delete("/delete", isAuthenticated, async (req, res) => {
   try {
     const userToDelete = await User.findByIdAndDelete(req.body.user);
     res.status(201).json({ message: "profile deleted" });
