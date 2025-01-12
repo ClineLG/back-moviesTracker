@@ -4,7 +4,7 @@ const Movie = mongoose.model("Movie", {
   title: String,
   original_title: String,
   release_date: String,
-  genre: Array,
+  genres: Array,
   runtime: String,
   overview: String,
   budget: String,

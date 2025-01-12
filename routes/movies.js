@@ -11,7 +11,7 @@ router.get("/movies/pop", async (req, res) => {
     );
     res.status(201).json(response.data);
   } catch (error) {
-    console.log(error.response.data);
+    console.log(error.response);
     res.status(500).json(error.response);
   }
 });
