@@ -80,17 +80,14 @@ router.get("/movies/categories/:id", async (req, res) => {
   } else {
     try {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&language=fr&query=${search}&with_genres=${id}&page=${page}`
+        `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&language=fr&with_genres=${id}&query=${search}&page=${page}`
       );
-      console.log("coucocu");
       res.status(201).json(response.data);
     } catch (error) {
       console.log(error);
       res.status(500).json(error.response);
     }
   }
-
-  //https://image.tmdb.org/t/p/w500+poster_path
 });
 
 router.get("/movies/search", async (req, res) => {

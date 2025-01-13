@@ -56,7 +56,7 @@ router.post("/signup", fileUpload(), async (req, res) => {
     if (req.files) {
       const convertedImage = convertToBase64(req.files.image);
       const image = await cloudinary.uploader.upload(convertedImage, {
-        folder: `MoviesTrack/user/${newUser._id}`,
+        folder: `MoviesTracker/user/${newUser._id}`,
       });
       newUser.avatar = {
         secure_url: image.secure_url,
@@ -124,7 +124,7 @@ router.put("/update", isAuthenticated, fileUpload(), async (req, res) => {
     if (req.files) {
       const convertedImage = convertToBase64(req.files.image);
       const image = await cloudinary.uploader.upload(convertedImage, {
-        folder: `Rememeber/user/${user._id}`,
+        folder: `MovieTracker/user/${user._id}`,
       });
       user.avatar = {
         secure_url: image.secure_url,
