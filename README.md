@@ -1,34 +1,34 @@
 # MovieTracker
 
-**MovieTracker** est une application full-stack qui permet aux utilisateurs de suivre et organiser leurs films. Ils peuvent créer des collections personnalisées et ajouter des films à leurs listes.
+**MovieTracker** is a full-stack application that allows users to track and organize their movies. Users can create custom collections and add movies to their lists.
 
-## Fonctionnalités
+## Features
 
-- Recherche de films avec des filtres.
-- Création et gestion de collections de films personnalisées.
-- Stockage des données dans une base de données MongoDB.
-- Frontend interactif construit avec React et Vite.
+- Movie search with filters.
+- Create and manage custom movie collections.
+- Data storage using MongoDB.
+- Interactive frontend built with React and Vite.
 
-## Technologies utilisées
+## Technologies Used
 
-- **Frontend** : React, Vite, CSS
-- **Backend** : Node.js, Express.js, MongoDB
-- **Déploiement** : Netlify (Frontend), NorthFlank (Backend)
+- **Frontend**: React, Vite, CSS
+- **Backend**: Node.js, Express.js, MongoDB
+- **Deployment**: Netlify (Frontend), Northflank (Backend)
 
 ## Installation
 
 ### Backend
 
-1. Clonez le repository back-end :
-    ```bash
-    git clone https://github.com/ClineLG/back-moviesTracker.git
-
-  2.Installez les dépendances :
-  ```bash
-  cd back-moviesTracker
-  npm i
-  ```
-
-3.Démarrez le serveur :
+1. Clone the front-end repository:
    ```bash
-  npx nodemon
+   git clone https://github.com/ClineLG/back-moviesTracker.git
+   
+2. Install dependencies:
+    ```bash
+    cd back-moviesTracker
+    npm i
+    ```
+    
+3. Run the app:
+    ```bash
+    npx nodemon
