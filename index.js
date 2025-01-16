@@ -7,7 +7,6 @@ app.use(cors());
 require("dotenv").config();
 
 mongoose.connect(process.env.MONGODB_URI);
-
 app.use(express.json());
 
 const userRoutes = require("./routes/user");
@@ -17,6 +16,8 @@ const moviesRoutes = require("./routes/movies");
 app.use(moviesRoutes);
 
 app.get("/", (req, res) => {
+  console.log(process.env.TMDB_API_KEY);
+
   res.status(200).json("welcome on Movies Tracker app");
 });
 
