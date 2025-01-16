@@ -16,8 +16,6 @@ const moviesRoutes = require("./routes/movies");
 app.use(moviesRoutes);
 
 app.get("/", (req, res) => {
-  console.log(process.env.TMDB_API_KEY);
-
   res.status(200).json("welcome on Movies Tracker app");
 });
 
