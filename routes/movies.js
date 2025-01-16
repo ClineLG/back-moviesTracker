@@ -7,12 +7,17 @@ router.get("/movies/pop", async (req, res) => {
     const { page } = req.query;
     console.log("PAGE", page, req.query);
     const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.TMDB_API_KEY}&language=fr&page=${page}`
+      `https://api.themoviedb.org/3/movie/popular?language=fr&page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB}`,
+        },
+      }
     );
     res.status(201).json(response.data);
   } catch (error) {
     console.log(error.response);
-    res.status(500).json(error.response);
+    res.status(500).json(error.response.data);
   }
 });
 
@@ -20,12 +25,17 @@ router.get("/movies/playing", async (req, res) => {
   try {
     const { page } = req.query;
     const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/now_playing?api_key=${process.env.TMDB_API_KEY}&language=fr&page=${page}`
+      `https://api.themoviedb.org/3/movie/now_playing?&language=fr&page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB}`,
+        },
+      }
     );
     res.status(201).json(response.data);
   } catch (error) {
     console.log(error);
-    res.status(500).json(error.response);
+    res.status(500).json(error.response.data);
   }
 });
 
@@ -42,19 +52,29 @@ router.get("/movies/upComing", async (req, res) => {
     const dateToSend = `${year}-${month < 10 ? "0" + month : month}-${day}`;
 
     const response = await axios.get(
-      `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&language=fr-FR&primary_release_date.gte=${dateToSend}&page=${page}`
+      `https://api.themoviedb.org/3/discover/movie?language=fr-FR&primary_release_date.gte=${dateToSend}&page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB}`,
+        },
+      }
     );
     res.status(201).json(response.data);
   } catch (error) {
     console.log(error);
-    res.status(500).json(error.response);
+    res.status(500).json(error.response.data);
   }
 });
 
 router.get("/movies/categories", async (req, res) => {
   try {
     const response = await axios.get(
-      `https://api.themoviedb.org/3/genre/movie/list?api_key=${process.env.TMDB_API_KEY}&language=fr`
+      `https://api.themoviedb.org/3/genre/movie/list?language=fr`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB}`,
+        },
+      }
     );
     res.status(201).json(response.data);
   } catch (error) {
@@ -66,11 +86,15 @@ router.get("/movies/categories", async (req, res) => {
 router.get("/movies/categories/:id", async (req, res) => {
   const { id } = req.params;
   const { page, search } = req.query;
-  console.log("params=", id, "q", req.query);
   if (!search) {
     try {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/discover/movie?api_key=${process.env.TMDB_API_KEY}&language=fr&with_genres=${id}&page=${page}`
+        `https://api.themoviedb.org/3/discover/movie?language=fr&with_genres=${id}&page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.TMDB}`,
+          },
+        }
       );
       res.status(201).json(response.data);
     } catch (error) {
@@ -80,7 +104,12 @@ router.get("/movies/categories/:id", async (req, res) => {
   } else {
     try {
       const response = await axios.get(
-        `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&language=fr&with_genres=${id}&query=${search}&page=${page}`
+        `https://api.themoviedb.org/3/search/movie?language=fr&with_genres=${id}&query=${search}&page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${process.env.TMDB}`,
+          },
+        }
       );
       res.status(201).json(response.data);
     } catch (error) {
@@ -96,11 +125,14 @@ router.get("/movies/search", async (req, res) => {
     console.log(req.query);
 
     const response = await axios.get(
-      `https://api.themoviedb.org/3/search/movie?api_key=${process.env.TMDB_API_KEY}&language=fr&query=${search}&page=${page}`
+      `https://api.themoviedb.org/3/search/movie?language=fr&query=${search}&page=${page}`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB}`,
+        },
+      }
     );
     res.status(201).json(response.data);
-
-    //https://image.tmdb.org/t/p/w500+poster_path
   } catch (error) {
     console.log(error);
     res.status(500).json(error.response);
@@ -111,11 +143,16 @@ router.get("/movies/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const response = await axios.get(
-      `https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.TMDB_API_KEY}&language=fr`
+      `https://api.themoviedb.org/3/movie/${id}?language=fr`,
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.TMDB}`,
+        },
+      }
     );
     res.status(201).json(response.data);
   } catch (error) {
-    console.log(error);
+    console.log(error.response);
   }
 });
 

@@ -4,7 +4,7 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const app = express();
 app.use(cors());
-
+const apikey = process.env.PORT;
 require("dotenv").config();
 
 mongoose.connect(process.env.MONGODB_URI);
@@ -18,7 +18,7 @@ const moviesRoutes = require("./routes/movies");
 app.use(moviesRoutes);
 
 app.get("/", (req, res) => {
-  res.status(200).json("welcome on Movies Tracker app");
+  res.status(200).json("welcome on Movies Tracker app" + apikey);
 });
 
 app.all("*", (req, res) => {
