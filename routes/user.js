@@ -297,9 +297,6 @@ router.get("/collection/details/:id", isAuthenticated, async (req, res) => {
       .select("fav");
     const objToSend = {};
     for (let i = 0; i < user.fav.length; i++) {
-      console.log("UserId", user.fav[i]._id.toString());
-      console.log("id", id);
-
       if (user.fav[i]._id.toString() === id) {
         objToSend.result = user.fav[i];
         objToSend.index = i;
